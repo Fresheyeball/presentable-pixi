@@ -2,6 +2,8 @@ module Main where
 
 import Presentable.ViewParser
 import Presentable.Router
+import Pixi.DisplayObject.Container.Stage
+import Pixi.Detector
 import History
 import Data.Either
 import Data.Tuple
@@ -32,7 +34,7 @@ render item = ready $ do i <- item
 clearFrame = body >>= clear
 
 header _ (Just a) = do
-  render $ create ("<header>"++ a.title ++"</header>") >>= css style
+  render $ create ("<header>" ++ a.title ++ "</header>") >>= css style
   return $ Just { src : "http://www.peoplepulse.com.au/heart-icon.png" }
   where 
   style =  { top         : 0
@@ -45,12 +47,12 @@ header _ (Just a) = do
            , zIndex      : 0
            , background  : "black"}
 
-
 logo (Just p) _ = do 
-  render $ create ("<img src='" ++ p.src ++ "' />") 
+  render $ create dom
     >>= css style >>= on "click" click
   return Nothing
   where
+  dom   = "<img src='" ++ p.src ++ "' />"
   click _ _ = clearFrame >>= \_ -> pushState about
   about = { url : "/about", title : "about", "data" :{} }
   style = { top      : 6
@@ -64,12 +66,15 @@ footer _ _ = do
   trace "render footer"
   return Nothing
 
-main = do
-  route rs $ flip renderYaml
-    $ register "footer" footer
-    $ register "header" header
-    $ register "logo"   logo
-    $ emptyRegistery
-  initRoutes
-  where rs = [ (Tuple {url : "/index", title : "home",  "data" :{}} sampleYaml)
-             , (Tuple {url : "/about", title : "about", "data" :{}} sampleYamlAbout)]
+main = ready $ do
+  stage    <- newStage 0x000000
+  renderer <- autoDetectRenderer 400 300
+  appendToBody renderer.view
+  -- route rs $ flip renderYaml
+  --   $ register "footer" footer
+  --   $ register "header" header
+  --   $ register "logo"   logo
+  --   $ emptyRegistery
+  -- initRoutes
+  -- where rs = [ (Tuple {url : "/index", title : "home",  "data" :{}} sampleYaml)
+  --            , (Tuple {url : "/about", title : "about", "data" :{}} sampleYamlAbout)]
