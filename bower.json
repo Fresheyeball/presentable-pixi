@@ -11,10 +11,8 @@
   ],
   "dependencies": {
     "js-yaml": "~3.1.0",
-    "purescript-yaml": "*",
     "purescript-arrays": "*",
     "purescript-maybe": "*",
-    "purescript-foreign": "~0.1.4",
     "purescript-tuples": "~0.1.2",
     "purescript-maps": "~0.0.4",
     "purescript-events": "~0.0.3",
@@ -30,6 +28,7 @@
     "chai": "~1.9.1",
     "purescript-mocha": "*",
     "purescript-chai": "*",
-    "purescript-debug-foreign": "*"
+    "purescript-debug-foreign": "*",
+    "purescript-jquery": "*"
   }
 }
