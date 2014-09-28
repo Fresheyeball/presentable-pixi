@@ -33,8 +33,8 @@ spec = describe "ViewParser" $ do
       recieveAttr done = renderYaml Nothing registry yaml
         where
         registry = register "item" (expectAttrs done) emptyRegistery
-        expectAttrs :: forall p a e. DoneToken -> Linker p (foo  :: String, bar  :: String | a) 
-                                                           (chai :: Chai,   done :: Done   | e)
+        expectAttrs :: forall a p e. DoneToken -> Linker (foo  :: String, bar  :: String | a) p
+                                                         (chai :: Chai,   done :: Done   | e)
         expectAttrs done _ (Just a) = do
           expect a `toDeepEqual` {foo : "foo", bar : "bar"}
           itIs done
@@ -44,10 +44,19 @@ spec = describe "ViewParser" $ do
               \    foo : 'foo'\n\
               \    bar : 'bar'"
 
-      -- recieveRootParent done = renderYaml { foo : "foo" }
-      --   ()
+      recieveTopParent done = renderYaml (Just {foo : "foo", bar : "bar"}) registry yaml
+        where
+        registry = register "item" (expectParent done) emptyRegistery
+        expectParent :: forall a p e. DoneToken -> Linker a (foo  :: String, bar  :: String | p) 
+                                                            (chai :: Chai,   done :: Done   | e)
+        expectParent done (Just p) _ = do
+          expect p `toDeepEqual` {foo : "foo", bar : "bar"}
+          itIs done
+          return Nothing
+        yaml = "- item"
 
     itAsync "Top level items recieve attributes" recieveAttr
+    itAsync "Top level items recieve topParent"  recieveTopParent
 
   describe "Children" $ do 
 
