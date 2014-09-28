@@ -82,7 +82,6 @@ spec = describe "ViewParser" $ do
           itIs done
           return Nothing
 
-
       recieveParentAndAttributes done = renderYaml Nothing registry childYamlWAttrs        
         where
         registry = register "parent" (\_ _ -> return $ Just {foo : "foo", bar : "bar"})
