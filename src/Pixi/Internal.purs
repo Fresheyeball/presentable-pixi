@@ -1,9 +1,13 @@
 module Pixi.Internal 
   ( (<:>)
+  , DOM(..), DOMMutation(..)
   , newPixi0, newPixi1 ) where
 
 import Data.Function
 import Control.Monad.Eff
+
+foreign import data DOM :: *
+foreign import data DOMMutation :: !
 
 (<:>) :: forall a b e. Eff e a -> b -> Eff e b
 (<:>) f b = f >>= const b >>> return
