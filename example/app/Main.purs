@@ -2,7 +2,9 @@ module Main where
 
 import Presentable.ViewParser
 import Presentable.Router
+import Pixi.Point
 import Pixi.Detector
+import Pixi.DisplayObject
 import Pixi.DisplayObject.Container
 import Pixi.DisplayObject.Container.Stage
 import Pixi.DisplayObject.Container.Graphic
@@ -46,12 +48,13 @@ foreign import getWindowHeight
   :: forall e. Eff (dom :: DOM | e) Number 
 
 header (Just p@{ stage = s }) (Just { title = t }) = do
-  text  <- T.newText t T.textStyleDefault{ fill = "white" }
-  getWindowWidth >>= drawMe >>= flip addChild text  
+  text <- T.newText t T.textStyleDefault{ fill = "white" } 
+          >>= setPosition {x : 40, y : 10} 
+  getWindowWidth >>= drawMe >>= flip addChild text
   return $ Just p{ src = "http://www.peoplepulse.com.au/heart-icon.png" }
   where 
   drawMe w = newGraphic >>= beginFill 0x00 1
-                        >>= drawRect {x : 0, y : 0, height : 50, width : w} 
+                        >>= drawRect {x : 0, y : 0, height : 45, width : w} 
                         >>= addChild (s :: Stage)
   
 

@@ -5,12 +5,17 @@ import Data.Foreign.OOFFI
 import Control.Monad.Eff
 import Pixi.Rectangle
 import Pixi.Internal
+import Pixi.Point
+
+import Debug.Trace
+import Debug.Foreign
 
 foreign import data InteractionData :: *
 foreign import data Mouse :: !
 foreign import data Touch :: !
 foreign import data Measure :: !
 foreign import data StageReference :: !
+foreign import data Position :: !
 
 class DisplayObject a 
 
@@ -53,3 +58,19 @@ getBounds = method0 "getBounds"
 
 getLocalBounds :: Instrument
 getLocalBounds = method0 "getLocalBounds"
+
+foreign import setPositionImpl 
+  "function setPositionImpl(_){\
+  \  return function(a){\
+  \    return function(p){\
+  \      return function(){\
+  \        a.position = p;\
+  \        return a;\
+  \      };\
+  \    };\
+  \  };\
+  \}" :: forall a e. (DisplayObject a) => a -> Point -> (Eff e a)
+
+setPosition :: forall a e. (DisplayObject a) => Point
+  -> a -> Eff (trace :: Trace, position :: Position | e) a
+setPosition p a = setPositionImpl a p
