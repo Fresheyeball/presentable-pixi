@@ -11,6 +11,9 @@ foreign import data AddChild    :: !
 foreign import data RemoveChild :: !
 foreign import data GetChild    :: !
 
+type ColorHex = Number
+type Alpha    = Number
+
 class (DisplayObject a) <= DisplayObjectContainer a
 
 instance displayObjectContainer :: DisplayObject Container

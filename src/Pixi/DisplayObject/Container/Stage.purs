@@ -9,7 +9,6 @@ import Control.Monad.Eff
 
 foreign import data Stage :: *
 foreign import data Color :: !
-type ColorHex = Number
 
 instance displayObjectStage :: DisplayObject Stage
 instance displayObjectContainerStage :: DisplayObjectContainer Stage

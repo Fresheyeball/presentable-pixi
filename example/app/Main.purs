@@ -2,8 +2,11 @@ module Main where
 
 import Presentable.ViewParser
 import Presentable.Router
-import Pixi.DisplayObject.Container.Stage
 import Pixi.Detector
+import Pixi.DisplayObject.Container
+import Pixi.DisplayObject.Container.Stage
+import Pixi.DisplayObject.Container.Graphic
+import qualified Pixi.DisplayObject.Container.Sprite.Text as T
 import History
 import Data.Either
 import Data.Tuple
@@ -11,6 +14,7 @@ import Data.Maybe
 import Debug.Trace
 import Debug.Foreign
 import Control.Monad.JQuery
+import Control.Monad.Eff
 
 sampleYaml = 
   "- header:\n\
@@ -28,27 +32,31 @@ sampleYamlAbout =
   \      - logo\n\
   \- footer"
 
-render item = ready $ do i <- item
-                         b <- body
-                         append i b
+renderJ item = ready $ do i <- item
+                          b <- body
+                          append i b
 clearFrame = body >>= clear
 
-header (Just p) (Just a) = do
-  render $ create ("<header>" ++ a.title ++ "</header>") >>= css style
+foreign import getWindowWidth
+  "function getWindowWidth(){ return window.innerWidth; }" 
+  :: forall e. Eff (dom :: DOM | e) Number 
+
+foreign import getWindowHeight
+  "function getWindowHeight(){ return window.innerHeight; }" 
+  :: forall e. Eff (dom :: DOM | e) Number 
+
+header (Just p@{ stage = s }) (Just { title = t }) = do
+  text  <- T.newText t T.textStyleDefault{ fill = "white" }
+  getWindowWidth >>= drawMe >>= flip addChild text  
   return $ Just p{ src = "http://www.peoplepulse.com.au/heart-icon.png" }
   where 
-  style =  { top         : 0
-           , left        : 0
-           , position    : "fixed"
-           , width       : "100%"
-           , padding     : "10px 50px"
-           , fontFamily  : "sans-serif"
-           , color       : "white"
-           , zIndex      : 0
-           , background  : "black"}
+  drawMe w = newGraphic >>= beginFill 0x00 1
+                        >>= drawRect {x : 0, y : 0, height : 50, width : w} 
+                        >>= addChild (s :: Stage)
+  
 
 logo (Just p) _ = do 
-  render $ create dom
+  renderJ $ create dom
     >>= css style >>= on "click" click
   return Nothing
   where
@@ -63,18 +71,28 @@ logo (Just p) _ = do
           , position : "fixed"}  
 
 footer _ _ = do
-  trace "render footer"
+  trace "renderJ footer"
   return Nothing
 
 main = ready $ do
-  stage    <- newStage 0x000000
-  renderer <- autoDetectRenderer 400 300
+  w        <- getWindowWidth
+  stage    <- newStage 0xFFFFFF
+  renderer <- autoDetectRenderer w 300
   appendToBody renderer.view
-  route rs $ renderYaml (Just { renderer : renderer, src : "" })
+
+  let root = { renderer : renderer
+             , stage    : stage
+             , src      : ""}
+
+  route rs $ renderYaml (Just root)
     $ register "footer" footer
     $ register "header" header
     $ register "logo"   logo
     $ emptyRegistery
+
+  subscribeStateChange $ const $ render stage renderer
+  
   initRoutes
+  
   where rs = [ (Tuple {url : "/index", title : "home",  "data" :{}} sampleYaml)
              , (Tuple {url : "/about", title : "about", "data" :{}} sampleYamlAbout)]
