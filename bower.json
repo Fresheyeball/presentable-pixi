@@ -13,6 +13,7 @@
     "js-yaml": "~3.1.0",
     "purescript-arrays": "*",
     "purescript-maybe": "*",
+    "purescript-pixi":"*",
     "purescript-tuples": "~0.1.2",
     "purescript-maps": "~0.0.4",
     "purescript-events": "~0.0.3",
