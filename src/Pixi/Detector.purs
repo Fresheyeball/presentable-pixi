@@ -19,4 +19,4 @@ foreign import appendToBody
   \  return function(){\
   \    document.body.appendChild(x);\
   \  };\
-  \}" :: forall e. DOM -> Eff (dom :: DOMMutation | e) Unit
+  \}" :: forall e. DOM -> Eff (domMutation :: DOMMutation | e) Unit

@@ -29,6 +29,7 @@
     "purescript-mocha": "*",
     "purescript-chai": "*",
     "purescript-debug-foreign": "*",
-    "purescript-jquery": "*"
+    "purescript-jquery": "*",
+    "jquery": "~2.1.1"
   }
 }

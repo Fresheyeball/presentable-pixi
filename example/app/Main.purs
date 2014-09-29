@@ -33,9 +33,9 @@ render item = ready $ do i <- item
                          append i b
 clearFrame = body >>= clear
 
-header _ (Just a) = do
+header (Just p) (Just a) = do
   render $ create ("<header>" ++ a.title ++ "</header>") >>= css style
-  return $ Just { src : "http://www.peoplepulse.com.au/heart-icon.png" }
+  return $ Just p{ src = "http://www.peoplepulse.com.au/heart-icon.png" }
   where 
   style =  { top         : 0
            , left        : 0
@@ -70,11 +70,11 @@ main = ready $ do
   stage    <- newStage 0x000000
   renderer <- autoDetectRenderer 400 300
   appendToBody renderer.view
-  -- route rs $ flip renderYaml
-  --   $ register "footer" footer
-  --   $ register "header" header
-  --   $ register "logo"   logo
-  --   $ emptyRegistery
-  -- initRoutes
-  -- where rs = [ (Tuple {url : "/index", title : "home",  "data" :{}} sampleYaml)
-  --            , (Tuple {url : "/about", title : "about", "data" :{}} sampleYamlAbout)]
+  route rs $ renderYaml (Just { renderer : renderer, src : "" })
+    $ register "footer" footer
+    $ register "header" header
+    $ register "logo"   logo
+    $ emptyRegistery
+  initRoutes
+  where rs = [ (Tuple {url : "/index", title : "home",  "data" :{}} sampleYaml)
+             , (Tuple {url : "/about", title : "about", "data" :{}} sampleYamlAbout)]
